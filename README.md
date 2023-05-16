@@ -1,6 +1,9 @@
 # TETRIS
 
-This is a version of the classic tetris game created using React and Flux.
+This is my version of the classic Tetris game, (originally developed by Alexey 
+Pajitnovin in 1985), created using React and Flux.
+
+https://en.wikipedia.org/wiki/Alexey_Pajitnov
 
 ## Bootstrap 
 
