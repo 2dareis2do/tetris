@@ -40,6 +40,12 @@ let _store = {
         twoseventy: [-18, -9, 0, 9],
         threesixty: [22, 11, 0, -11]
       },
+      transformationsa: {
+        ninety: [-9, 0, 9, 18],
+        oneeighty: [11, 0, -11, -22],
+        twoseventy: [-18, -9, 0, 9],
+        threesixty: [22, 11, 0, -11]
+      },
       transformations2: {
         ninety: [
           [-1, 1],
@@ -78,6 +84,12 @@ let _store = {
         twoseventy: [2, -9, 0, 9],
         threesixty: [11, 20, 0, -11]
       },
+      transformationsa: {
+        ninety: [20, 11, 0, -11],
+        oneeighty: [9, -2, 0, -9],
+        twoseventy: [11, 0, -11, -20],
+        threesixty: [9, 0, 2, -9]
+      },
     },
     {
       name: 'L',
@@ -90,6 +102,12 @@ let _store = {
         twoseventy: [20, -9, 0, 9],
         threesixty: [11, 0, -11, -2]
       },
+      transformationsa: {
+        ninety: [-2, 11, 0, -11],
+        oneeighty: [9, 0, -9, -20],
+        twoseventy: [11, 0, -11, 2],
+        threesixty: [20, 9, 0, -9]
+      },
     },
     {
       name: 'T',
@@ -101,6 +119,12 @@ let _store = {
         oneeighty: [11, -9, 0, -11],
         twoseventy: [11, -9, 0, 9],
         threesixty: [11, 0, 9, -11]
+      },
+      transformationsa: {
+        ninety: [9, 11, 0, -11],
+        oneeighty: [9, 0, -11, -9],
+        twoseventy: [11, 0, -11, -9],
+        threesixty: [9, 11, 0, -9]
       },
       transformations2: {
         ninety: [
@@ -135,6 +159,12 @@ let _store = {
       width: 2,
       height: 2,
       transformations: {
+        ninety: [0, 0, 0, 0],
+        oneeighty: [0, 0, 0, 0],
+        twoseventy: [0, 0, 0, 0],
+        threesixty: [0, 0, 0, 0]
+      },
+      transformationsa: {
         ninety: [0, 0, 0, 0],
         oneeighty: [0, 0, 0, 0],
         twoseventy: [0, 0, 0, 0],
@@ -399,6 +429,7 @@ function turnClockwise() {
   switch (angle) {
     case 0:
       // let transformArray = _store.shapes[shape].transformations.ninety;
+      // console.log("transformArray", transformArray);
       // takes the current transform array and adds it to the current array
       let sum = currentShape.map(transformCurrentShapeNinety, {
         shape: shape
@@ -417,6 +448,8 @@ function turnClockwise() {
       break;
     case 90:
       // transformArray = _store.shapes[shape].transformations.oneeighty;
+      // console.log("transformArray", transformArray);
+
       // takes the current transform array and adds it to the current array
       sum = currentShape.map(transformCurrentShapeOneEighty, {
         shape: shape
@@ -480,10 +513,126 @@ function turnClockwise() {
 }
 
 /*
+ * moves the current item clockwise
+ */
+function turnAnticlockwise() {
+  let shape = _store.shape;
+  let angle = _store.angle;
+  // lets restrict movement if certain conditions
+  // sort curent shape low to high - transform matrix is always calculated form ther first item to the last
+  let currentShape = _store.currentItem.sort(function (a, b) { return a - b });
+  //  console.log(currentShape);
+  let tempCurrent = currentShape.map(checkColumnInset);
+  // lets remove items that return undefined
+  tempCurrent = tempCurrent.filter(function (element) {
+    return element !== undefined;
+  });
+  // if not a pipe in column 1 return
+  if (tempCurrent.length <= 0) {
+    return;
+  }
+  // We also check if the shape has 3 elements in the first column
+  // if current shape has 3 or more items that are in column 0 return
+  tempCurrent = currentShape.map(checkOutsideColumn);
+  // remember all shapes have 4 items
+  tempCurrent = tempCurrent.filter(function (element) {
+    return element !== undefined;
+  });
+  if (tempCurrent.length <= 1) {
+    return;
+  }
+  // console.log(angle);
+  switch (angle) {
+    case 0:
+      // let transformArray = _store.shapes[shape].transformations.ninety;
+      // takes the current transform array and adds it to the current array
+      // opposite for anti
+      let sum = currentShape.map(transformCurrentShapeTwoSeventyAnti, {
+        shape: shape
+      });
+      sum = sum.filter(function (element) {
+        return element !== undefined;
+      });
+      _store.angle = 270;
+      // need to check if 'new' summed array
+      // 2. is on the stage
+      // 1. does not match a value that already exists
+      // note if exists in current array transform value should be fine
+      if (sum.length === 4) {
+        moveCurrent(sum);
+      }
+      break;
+    case 90:
+      // transformArray = _store.shapes[shape].transformations.oneeighty;
+      // takes the current transform array and adds it to the current array
+      sum = currentShape.map(transformCurrentShapeThreeSixtyAnti, {
+        shape: shape
+      });
+      // console.log(sum);
+      sum = sum.filter(function (element) {
+        return element !== undefined;
+      });
+      _store.angle = 0;
+      // need to check if 'new' summed array
+      // 2. is on the stage
+      // 1. does not match a value that already exists
+      // note if exists in current array transform value should be fine
+      if (sum.length === 4) {
+        moveCurrent(sum);
+      }
+      break;
+    case 180:
+      // transformArray = _store.shapes[shape].transformations.twoseventy;
+      // takes the current transform array and adds it to the current array
+      sum = currentShape.map(transformCurrentShapeNinetyAnti, {
+        shape: shape
+      });
+      // console.log(sum);
+      sum = sum.filter(function (element) {
+        return element !== undefined;
+      });
+      _store.angle = 90;
+      // need to check if 'new' summed array
+      // 2. is on the stage
+      // 1. does not match a value that already exists
+      // note if exists in current array transform value should be fine
+      if (sum.length === 4) {
+        moveCurrent(sum);
+      }
+      break;
+    case 270:
+      // transformArray = _store.shapes[shape].transformations.threesixty;
+      // takes the current transform array and adds it to the current array
+      sum = currentShape.map(transformCurrentShapeOneEightyAnti, {
+        shape: shape
+      });
+      // console.log(sum);
+      sum = sum.filter(function (element) {
+        return element !== undefined;
+      });
+      _store.angle = 180;
+      // need to check if 'new' summed array
+      // 2. is on the stage
+      // 1. does not match a value that already exists
+      // note if exists in current array transform value should be fine
+      if (sum.length === 4) {
+        moveCurrent(sum);
+      }
+
+      break;
+    default:
+      _store.angle = 0;
+
+  }
+}
+
+/*
  * Accepts an number and transforms this based on its shape and position
  * also accept @param shape
  */
 function transformCurrentShapeNinety(num, i, array) {
+  // console.log(array);
+  // console.log("direction", direction)
   let shape = this.shape;
   // let currentShape = array;
   let transformArray = _store.shapes[shape].transformations.ninety;
@@ -507,10 +656,64 @@ function transformCurrentShapeNinety(num, i, array) {
  * Accepts an number and transforms this based on its shape and position
  * also accept @param shape
  */
+function transformCurrentShapeNinetyAnti(num, i, array) {
+  // console.log(array);
+  // console.log("direction", direction)
+  let shape = this.shape;
+  // let currentShape = array;
+  let transformArray = _store.shapes[shape].transformationsa.ninety;
+  // here we can check if transformed array is valid?
+  let newNumber = num + transformArray[i];
+  // if new number is the same as an existiong current item  return new number is
+  if (_store.currentItem.includes(newNumber)) {
+    return newNumber;
+  } else if (_store.grid[newNumber] === 1) {
+    // console.log('not', newNumber);
+    return;
+  } else if (newNumber > (_store.columns * _store.rows)) {
+    // console.log('not > max', newNumber);
+    return;
+  } else {
+    return newNumber;
+  }
+}
+
+/*
+ * Accepts an number and transforms this based on its shape and position
+ * also accept @param shape
+ */
 function transformCurrentShapeOneEighty(num, i, array) {
+  // console.log(array);
+  // console.log("direction", direction)
   let shape = this.shape;
   // let currentShape = array;
   let transformArray = _store.shapes[shape].transformations.oneeighty;
+  // here we can check if transformed array is valid?
+  let newNumber = num + transformArray[i];
+  // if new number is the same as an existiong current item return new number is
+  if (_store.currentItem.includes(newNumber)) {
+    return newNumber;
+  } else if (_store.grid[newNumber] === 1) {
+    // console.log('not', newNumber);
+    return;
+  } else if (newNumber > (_store.columns * _store.rows)) {
+    // console.log('not > max', newNumber);
+    return;
+  } else {
+    return newNumber;
+  }
+}
+
+/*
+ * Accepts an number and transforms this based on its shape and position
+ * also accept @param shape
+ */
+function transformCurrentShapeOneEightyAnti(num, i, array) {
+  // console.log(array);
+  // console.log("direction", direction)
+  let shape = this.shape;
+  // let currentShape = array;
+  let transformArray = _store.shapes[shape].transformationsa.oneeighty;
   // here we can check if transformed array is valid?
   let newNumber = num + transformArray[i];
   // if new number is the same as an existiong current item return new number is
@@ -552,15 +755,64 @@ function transformCurrentShapeTwoSeventy(num, i, array) {
   }
 }
 
+/*
+ * Accepts an number and transforms this based on its shape and position
+ * also accept @param shape
+ */
+function transformCurrentShapeTwoSeventyAnti(num, i, array) {
+  let shape = this.shape;
+  // let currentShape = array;
+  let transformArray = _store.shapes[shape].transformationsa.twoseventy;
+  // here we can check if transformed array is valid?
+  let newNumber = num + transformArray[i];
+  // if new number is the same as an existiong current item  return new number is
+  if (_store.currentItem.includes(newNumber)) {
+    return newNumber;
+  } else if (_store.grid[newNumber] === 1) {
+    // console.log('not', newNumber);
+    return;
+  } else if (newNumber > (_store.columns * _store.rows)) {
+    // console.log('not > max', newNumber);
+    return;
+  } else {
+    return newNumber;
+  }
+}
 
 /*
  * Accepts an number and transforms this based on its shape and position
  * also accept @param shape
  */
 function transformCurrentShapeThreeSixty(num, i, array) {
+  // console.log(array);
+  // console.log("direction", direction)
   let shape = this.shape;
   // let currentShape = array;
   let transformArray = _store.shapes[shape].transformations.threesixty;
+  // here we can check if transformed array is valid?
+  let newNumber = num + transformArray[i];
+  // if new number is the same as an existiong current item  return new number is
+  if (_store.currentItem.includes(newNumber)) {
+    return newNumber;
+  } else if (_store.grid[newNumber] === 1) {
+    // console.log('not', newNumber);
+    return;
+  } else if (newNumber > (_store.columns * _store.rows)) {
+    // console.log('not > max', newNumber);
+    return;
+  } else {
+    return newNumber;
+  }
+}
+
+/*
+ * Accepts an number and transforms this based on its shape and position
+ * also accept @param shape
+ */
+function transformCurrentShapeThreeSixtyAnti(num, i, array) {
+  let shape = this.shape;
+  // let currentShape = array;
+  let transformArray = _store.shapes[shape].transformationsa.threesixty;
   // here we can check if transformed array is valid?
   let newNumber = num + transformArray[i];
   // if new number is the same as an existiong current item  return new number is
@@ -1101,12 +1353,12 @@ function keyMap(key) {
       break;
     case 'ArrowDown':
       if (_store.state > 0) {
-        dropDown();
+        turnClockwise();
       }
       break;
     case 'ArrowUp':
       if (_store.state > 0) {
-        turnClockwise();
+        turnAnticlockwise();
       }
       break;
     case 'ArrowLeft':
@@ -1176,6 +1428,14 @@ AppDispatcher.register((payload) => {
       GridsterStore.emit(CHANGE_EVENT);
       break;
 
+    case GridsterConstants.MOVE_ANTICLOCKWISE:
+      // call function to update store here = add 10 cells to beginning - remove 10 cells at the end
+      if (_store.state > 0) {
+        turnAnticlockwise();
+      }
+      GridsterStore.emit(CHANGE_EVENT);
+      break;
+      
     case GridsterConstants.MOVE_CLOCKWISE:
       // call function to update store here = add 10 cells to beginning - remove 10 cells at the end
       if (_store.state > 0) {

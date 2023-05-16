@@ -4,7 +4,7 @@ import GridsterStore from '../stores/GridsterStore.js';
 import Button from './Button';
 // import Input from './Input';
 import Grid from './Grid';
-import { updateRow, updateColumn, generateGrid, generateStart, generateEnd, updateGravity, moveClockwise, startGame, moveRight, moveLeft, keyDown, loadLocalStorage} from '../actions/GridsterActions.js';
+import { updateRow, updateColumn, generateGrid, generateStart, generateEnd, updateGravity, moveClockwise, moveAnticlockwise, startGame, moveRight, moveLeft, keyDown, loadLocalStorage} from '../actions/GridsterActions.js';
 // import { EventEmitter } from 'events';
 
 function inputValidation(value) {
@@ -157,7 +157,7 @@ export default class GridWidget extends Component {
       if ( this.yDiff > 0 ) {
           /* up swipe */
           // console.log('swipe up')
-          this._onRotate();
+          this._onRotateClockwise();
 
       } else {
           /* down swipe */
@@ -199,8 +199,12 @@ export default class GridWidget extends Component {
     moveLeft();
   }
 
-  _onRotate() {
+  _onRotateClockwise() {
     moveClockwise();
+  }
+  
+  _onRotateAnticlockwise() {
+    moveAnticlockwise();
   }
 
   _startGame() {
@@ -222,7 +226,9 @@ export default class GridWidget extends Component {
             <Button text="Left" onclick={this._onLeft} />
             <Button text="Right" onclick={this._onRight} />
             <Button text="Down" onclick={this._onGravity} />
-            <Button text="Rotate" onclick={this._onRotate} />
+            <Button text="Clockwise" onclick={this._onRotateClockwise} />
+            <Button text="Anticlockwise" onclick={this._onRotateAnticlockwise} />
+
             <Button text="Start" disabled={!enabled} onclick={this._startGame} />
 
           </form>

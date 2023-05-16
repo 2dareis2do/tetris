@@ -92,6 +92,12 @@ export function moveClockwise() {
   });
 }
 
+export function moveAnticlockwise() {
+  AppDispatcher.handleViewAction({
+    actionType: GridsterConstants.MOVE_ANTICLOCKWISE
+  });
+}
+
 export function startGame() {
   AppDispatcher.handleViewAction({
     actionType: GridsterConstants.START_GAME
