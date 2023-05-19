@@ -286,7 +286,7 @@ var enabled = false;
 var lfo = audioCtx.createOscillator();
 var lfoGain = audioCtx.createGain();
 
-function play() {
+function playAudio() {
 
   if (audioCtx.state === 'suspended' && enabled) {
     audioCtx.resume();
@@ -1119,7 +1119,9 @@ function dropNext() {
   // reset current item
   _store.currentItem.length = 0;
   //check for filled rows
-  checkRows();
+  checkFilledRows();
+  // checkFilledRows();
+
   //choose random shape
   let randShape = chooseRandomShape();
   paintShape(randShape);
@@ -1128,7 +1130,7 @@ function dropNext() {
 /*
  * checks for any filled rows
  */
-function checkRows() {
+function checkFilledRows() {
   let tempGrid = _store.grid;
 
   //counts through from high to low
@@ -1138,7 +1140,7 @@ function checkRows() {
 
     let temp = tempGrid.slice(tempLength - ((_store.columns * i) + _store.columns), tempLength - (_store.columns * i));
 
-    //check each row for alll matching ones
+    //check each row for all matching ones
     let count = 0;
     //counts through from high to low
     for (let j = 0; j < _store.columns; j++) {
@@ -1153,6 +1155,7 @@ function checkRows() {
      * 2. insert rows at the top
      */
     if (count === 10) {
+      console.log("10 in a row");
       _store.score = _store.score + 10;
       if (_store.score > _store.highScore) {
         _store.highScore = _store.score;
@@ -1163,12 +1166,13 @@ function checkRows() {
       let tempLength2 = _store.grid.length;
       _store.grid.splice(tempLength2 - ((_store.columns * i) + _store.columns), _store.columns);
       // playTestInstrument();
-      play();
+      playAudio();
       addTop();
       decreaseInterval();
-      //not sure why we have to start timer again?! after decreasiong interval in order for speed to decrease
+      // start timer again after decreasing interval in order for speed to decrease
       startTimer();
-      // not always removing multiple rows ?
+      // only removes one row - lets call again to check if more than one
+      checkFilledRows();
     }
   }
 
@@ -1260,7 +1264,7 @@ function moveRightCurrent(item, index, arr) {
  */
 function startGame() {
   //clear the grid here
-  play();
+  playAudio();
   clearGrid();
   //reset the score
   _store.score = 0;
